@@ -24,31 +24,33 @@ export function WeeklyChart({ data }: { data: WeeklyData[] }) {
                </span>
             </div>
          </div>
-         <div className="h-[250px]">
-            <ResponsiveContainer width="100%" height="100%">
-               <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                 <XAxis 
-                   dataKey="day" 
-                   axisLine={false} 
-                   tickLine={false} 
-                   tick={{fill: '#8B7A8B', fontSize: 12, fontWeight: 700}}
-                   dy={10}
-                 />
-                 <Tooltip 
-                   cursor={{fill: 'rgba(255, 183, 213, 0.08)'}}
-                   contentStyle={{
-                     borderRadius: '12px',
-                     border: '1px solid #f0f0f0',
-                     boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
-                     padding: '12px',
-                     backgroundColor: '#ffffff',
-                     fontFamily: 'inherit'
-                   }}
-                 />
-                 <Bar dataKey="omzet" fill="#FFB7D5" radius={[4, 4, 0, 0]} barSize={20} />
-                 <Bar dataKey="laba" fill="#C98BFF" radius={[4, 4, 0, 0]} barSize={20} />
-               </BarChart>
-            </ResponsiveContainer>
+         <div className="overflow-x-auto pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
+            <div className="min-w-[600px] h-[250px]">
+               <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                    <XAxis 
+                      dataKey="day" 
+                      axisLine={false} 
+                      tickLine={false} 
+                      tick={{fill: '#8B7A8B', fontSize: 12, fontWeight: 700}}
+                      dy={10}
+                    />
+                    <Tooltip 
+                      cursor={{fill: 'rgba(255, 183, 213, 0.08)'}}
+                      contentStyle={{
+                        borderRadius: '12px',
+                        border: '1px solid #f0f0f0',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                        padding: '12px',
+                        backgroundColor: '#ffffff',
+                        fontFamily: 'inherit'
+                      }}
+                    />
+                    <Bar dataKey="omzet" fill="#FFB7D5" radius={[4, 4, 0, 0]} barSize={20} />
+                    <Bar dataKey="laba" fill="#C98BFF" radius={[4, 4, 0, 0]} barSize={20} />
+                  </BarChart>
+               </ResponsiveContainer>
+            </div>
          </div>
     </ClayCard>
   );

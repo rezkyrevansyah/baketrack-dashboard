@@ -112,7 +112,7 @@ export default function ProductPage() {
   return (
     <div className="max-w-6xl mx-auto space-y-10 animate-in fade-in duration-700">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-4 pt-4 md:pt-6">
         <div>
           <h1 className="text-4xl font-black text-bakery-text tracking-tight mb-2">Manajemen Produk</h1>
           <p className="text-bakery-muted font-bold text-sm tracking-wide opacity-70 uppercase">

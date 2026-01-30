@@ -129,7 +129,7 @@ export default function ReportPage() {
   return (
     <div className="space-y-8 animate-in fade-in duration-500 pb-12">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-4">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-4 pt-4 md:pt-6">
         <div>
           <h1 className="text-4xl font-black text-bakery-text tracking-tight mb-2">Laporan Penjualan</h1>
           <p className="text-bakery-muted font-bold text-sm tracking-wide opacity-70 uppercase">
