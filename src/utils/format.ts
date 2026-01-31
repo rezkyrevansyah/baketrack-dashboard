@@ -17,11 +17,13 @@ export const formatCurrency = (amount: number): string => {
  * @param options Intl.DateTimeFormatOptions
  * @returns string like "30 Jan 2024"
  */
-export const formatDate = (date: string | Date | number, options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' }): string => {
+export const formatDate = (date: string | Date | number, locale: string = 'id-ID', options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' }): string => {
   try {
     const d = new Date(date);
     if (isNaN(d.getTime())) return '-';
-    return d.toLocaleDateString('id-ID', options);
+    // Handle simple language codes
+    const finalLocale = locale === 'ID' ? 'id-ID' : locale === 'EN' ? 'en-US' : locale;
+    return d.toLocaleDateString(finalLocale, options);
   } catch (e) {
     return '-';
   }

@@ -9,12 +9,13 @@ interface UseTableProps<T> {
 
 export function useTable<T>({ 
   data, 
-  itemsPerPage = 20, 
+  itemsPerPage: initialItemsPerPage = 5, 
   initialSort, 
   filterFn 
 }: UseTableProps<T>) {
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(initialItemsPerPage);
   const [sortConfig, setSortConfig] = useState<{ key: keyof T; direction: 'asc' | 'desc' } | null>(
     initialSort || null
   );
@@ -74,5 +75,7 @@ export function useTable<T>({
     goToPage,
     nextPage: () => goToPage(currentPage + 1),
     prevPage: () => goToPage(currentPage - 1),
+    itemsPerPage,
+    setItemsPerPage
   };
 }

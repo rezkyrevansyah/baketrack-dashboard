@@ -1,5 +1,6 @@
 import { ClayCard } from '@/components/ui/ClayCard';
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { usePreferences } from '@/context/PreferencesContext';
 
 type WeeklyData = {
   day: string;
@@ -8,19 +9,20 @@ type WeeklyData = {
 };
 
 export function WeeklyChart({ data }: { data: WeeklyData[] }) {
+  const { t } = usePreferences();
   return (
-    <ClayCard className="!bg-white p-8 rounded-2xl border border-gray-100">
+    <div className="clay-card-static !bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
             <div>
-              <h3 className="font-black text-2xl text-bakery-text">Grafik Mingguan</h3>
-              <p className="text-bakery-muted font-bold text-sm mt-1">Tren penjualan 7 hari terakhir</p>
+              <h3 className="font-black text-2xl text-bakery-text">{t('weekly_performance')}</h3>
+              <p className="text-bakery-muted font-bold text-sm mt-1">{t('report.subtitle')}</p>
             </div>
             <div className="flex gap-4 text-xs font-bold">
                <span className="flex items-center gap-2 bg-pink-50 px-3 py-1.5 rounded-lg text-pink-500">
-                 <div className="w-2 h-2 rounded-full bg-pink-500"></div> Omzet
+                 <div className="w-2 h-2 rounded-full bg-pink-500"></div> {t('total_omzet')}
                </span>
                <span className="flex items-center gap-2 bg-purple-50 px-3 py-1.5 rounded-lg text-purple-500">
-                 <div className="w-2 h-2 rounded-full bg-purple-500"></div> Laba
+                 <div className="w-2 h-2 rounded-full bg-purple-500"></div> {t('total_profit')}
                </span>
             </div>
          </div>
@@ -52,6 +54,6 @@ export function WeeklyChart({ data }: { data: WeeklyData[] }) {
                </ResponsiveContainer>
             </div>
          </div>
-    </ClayCard>
+    </div>
   );
 }

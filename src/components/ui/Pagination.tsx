@@ -7,14 +7,20 @@ interface PaginationProps {
   className?: string;
 }
 
-export function Pagination({ currentPage, totalPages, onPageChange, className = '' }: PaginationProps) {
+export function Pagination({ 
+  currentPage, 
+  totalPages, 
+  onPageChange, 
+  className = '' 
+}: PaginationProps) {
   if (totalPages <= 1) return null;
 
   return (
     <div className={`flex items-center justify-between px-6 py-4 border-t border-gray-100 bg-gray-50/50 ${className}`}>
-      <p className="text-xs font-bold text-bakery-muted">
+      <p className="text-xs font-bold text-bakery-muted whitespace-nowrap">
          Halaman {currentPage} dari {totalPages}
       </p>
+
       <div className="flex items-center gap-2">
          <button
             onClick={() => onPageChange(currentPage - 1)}

@@ -1,4 +1,5 @@
 import { ClayCard } from '@/components/ui/ClayCard';
+import { usePreferences } from '@/context/PreferencesContext';
 
 type TopProduct = {
   name: string;
@@ -7,10 +8,11 @@ type TopProduct = {
 };
 
 export function TopProductsCard({ products }: { products: TopProduct[] }) {
+  const { t } = usePreferences();
   return (
-    <ClayCard className="!bg-white p-6 h-48 flex flex-col border border-pink-50 rounded-2xl">
+    <div className="clay-card-static !bg-white p-6 h-48 flex flex-col border border-pink-50 rounded-2xl shadow-sm">
          <h3 className="font-black text-sm mb-4 text-bakery-text flex items-center gap-2 uppercase tracking-wide">
-           🏆 Produk Terlaris
+           🏆 {t('top_products')}
          </h3>
          <div className="space-y-3 flex-1 overflow-y-auto pr-2 custom-scrollbar">
              {products.length > 0 ? products.map((p, i) => (
@@ -30,6 +32,6 @@ export function TopProductsCard({ products }: { products: TopProduct[] }) {
                </div>
              )}
          </div>
-    </ClayCard>
+    </div>
   );
 }

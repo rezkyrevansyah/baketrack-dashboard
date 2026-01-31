@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { ClayButton } from '@/components/ui/ClayButton';
-import { Loader2, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useDashboard } from '@/context/DashboardContext';
 import { SyncButton } from '@/components/ui/SyncButton';
@@ -11,10 +11,13 @@ import { SummaryCards } from '@/components/report/SummaryCards';
 import { TopProductsCard } from '@/components/report/TopProductsCard';
 import { WeeklyChart } from '@/components/report/WeeklyChart';
 import { ReportTable } from '@/components/report/ReportTable';
-import { formatCurrency } from '@/utils/format';
+import { usePreferences } from '@/context/PreferencesContext';
+import { LanguageCurrencySwitcher } from '@/components/ui/LanguageCurrencySwitcher';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 export default function ReportPage() {
   const { data, loading } = useDashboard();
+  const { t, formatPrice, exchangeRate } = usePreferences();
   const transactions = data?.transactions || [];
 
   // 1. Calculate Summary Stats
@@ -25,13 +28,13 @@ export default function ReportPage() {
     const aov = totalTx > 0 ? totalOmzet / totalTx : 0;
 
     return {
-      omzet: formatCurrency(totalOmzet),
-      laba: formatCurrency(totalLaba),
-      aov: formatCurrency(aov),
+      omzet: formatPrice(totalOmzet),
+      laba: formatPrice(totalLaba),
+      aov: formatPrice(aov),
       totalTx,
       rawOmzet: totalOmzet
     };
-  }, [transactions]);
+  }, [transactions, formatPrice, exchangeRate]);
 
   // 2. Calculate Top Products
   const topProducts = useMemo(() => {
@@ -54,7 +57,7 @@ export default function ReportPage() {
     return Object.values(counts)
       .sort((a, b) => b.sold - a.sold)
       .slice(0, 3);
-  }, [transactions, data]);
+  }, [transactions, data, exchangeRate]);
 
   // 3. Weekly Data Aggregation
   const weeklyData = useMemo(() => {
@@ -74,7 +77,7 @@ export default function ReportPage() {
     });
 
     return [...result.slice(1), result[0]];
-  }, [transactions]);
+  }, [transactions, exchangeRate]);
 
   // 4. Data Table Logic
   const { 
@@ -85,10 +88,13 @@ export default function ReportPage() {
     setSearchQuery,
     sortConfig,
     handleSort,
-    goToPage
+    goToPage,
+    itemsPerPage, 
+    setItemsPerPage,
+    totalItems
   } = useTable({
     data: transactions || [],
-    itemsPerPage: 20, 
+    itemsPerPage: 5, 
     initialSort: { key: 'date', direction: 'desc' },
     filterFn: (item, query) => item.product.toLowerCase().includes(query.toLowerCase())
   });
@@ -116,14 +122,7 @@ export default function ReportPage() {
   };
 
   if (loading && !data) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center space-y-4">
-          <Loader2 className="w-16 h-16 text-pink-500 animate-spin mx-auto" />
-          <p className="text-bakery-muted font-black uppercase tracking-widest text-sm">Aggregating Analytics...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner message={t('common.loading')} />;
   }
 
   return (
@@ -131,9 +130,9 @@ export default function ReportPage() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-4 pt-4 md:pt-6">
         <div>
-          <h1 className="text-4xl font-black text-bakery-text tracking-tight mb-2">Laporan Penjualan</h1>
+          <h1 className="text-4xl font-black text-bakery-text tracking-tight mb-2">{t('report.title')}</h1>
           <p className="text-bakery-muted font-bold text-sm tracking-wide opacity-70 uppercase">
-             Ringkasan performa toko rotimu minggu ini
+             {t('report.subtitle')}
           </p>
         </div>
 
@@ -141,18 +140,19 @@ export default function ReportPage() {
            {/* Status Bar */}
            <div className="flex items-center gap-1.5 p-1.5 bg-white/95 rounded-2xl border border-white/50 shadow-sm">
               <div className="hidden md:flex flex-col px-3">
-                 <span className="text-[9px] font-black text-bakery-muted uppercase tracking-widest opacity-50">Periode</span>
+                 <span className="text-[9px] font-black text-bakery-muted uppercase tracking-widest opacity-50">{t('period')}</span>
                  <span className="text-xs font-black text-bakery-text">
-                    {new Date().toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}
+                    {new Date().toLocaleDateString(t('language') === 'Bahasa' ? 'id-ID' : 'en-US', { month: 'short', year: 'numeric' })}
                  </span>
               </div>
               <div className="h-6 w-px bg-gray-200 hidden md:block"></div>
               
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-green-50 border border-green-100 text-green-600">
                  <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-                 <span className="text-[10px] font-black uppercase tracking-widest">Live</span>
+                 <span className="text-[10px] font-black uppercase tracking-widest">{t('live')}</span>
               </div>
               
+              <LanguageCurrencySwitcher />
               <SyncButton variant="compact" className="!w-9 !h-9 !rounded-lg !border-none !bg-white !shadow-sm text-bakery-text/70 hover:!text-bakery-pink hover:!bg-pink-50" />
            </div>
 
@@ -184,6 +184,9 @@ export default function ReportPage() {
         currentPage={currentPage}
         totalPages={totalPages}
         goToPage={goToPage}
+        itemsPerPage={itemsPerPage}
+        setItemsPerPage={setItemsPerPage}
+        totalItems={totalItems}
       />
     </div>
   );

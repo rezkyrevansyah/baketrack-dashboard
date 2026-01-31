@@ -51,6 +51,18 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.6);
 }
 
+/* Optimization for scrolling performance - removes blur and simplifies shadow */
+.clay-card-static {
+  background: linear-gradient(135deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85));
+  border-radius: 32px;
+  box-shadow: 
+    10px 10px 20px rgba(214, 184, 199, 0.3), 
+    -5px -5px 15px rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  /* No backdrop-filter to prevent lag */
+  transform: translateZ(0); /* Force hardware acceleration */
+}
+
 /* Sidebar Specifics */
 .clay-sidebar {
   background: linear-gradient(180deg, #FF99C2 0%, #FF66A3 100%);

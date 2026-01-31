@@ -1,7 +1,7 @@
 import { ClayCard } from '@/components/ui/ClayCard';
 import { Loader2 } from 'lucide-react';
 import { Transaction } from '@/services/api';
-import { formatCurrency } from '@/utils/format';
+import { usePreferences } from '@/context/PreferencesContext';
 
 type DeleteTransactionModalProps = {
   isOpen: boolean;
@@ -18,6 +18,8 @@ export function DeleteTransactionModal({
   loading,
   transaction
 }: DeleteTransactionModalProps) {
+  const { t, formatPrice } = usePreferences();
+
   if (!isOpen) return null;
 
   return (
@@ -27,9 +29,9 @@ export function DeleteTransactionModal({
             ⚠️
          </div>
          
-         <h2 className="text-2xl font-black text-bakery-text mb-2">Hapus Transaksi?</h2>
+         <h2 className="text-2xl font-black text-bakery-text mb-2">{t('delete.transaction_title')}</h2>
          <p className="text-bakery-muted font-bold text-sm mb-8">
-            Yakin hapus transaksi <span className="text-red-500">{transaction?.product}</span> senilai <span className="text-bakery-pink">{transaction ? formatCurrency(transaction.total) : ''}</span>?
+            {t('delete.transaction_confirm')} <span className="text-red-500">{transaction?.product}</span> {t('delete.transaction_value')} <span className="text-bakery-pink">{transaction ? formatPrice(transaction.total) : ''}</span>?
          </p>
 
          <div className="grid grid-cols-2 gap-4">
@@ -38,14 +40,14 @@ export function DeleteTransactionModal({
               disabled={loading}
               className="h-12 rounded-2xl bg-gray-50 text-bakery-muted font-black hover:bg-gray-100 transition-all border-b-4 border-gray-200"
             >
-               BATAL
+               {t('delete.no')}
             </button>
             <button 
               onClick={onConfirm}
               disabled={loading}
               className="h-12 rounded-2xl bg-red-500 text-white font-black hover:bg-red-600 transition-all shadow-lg shadow-red-200 border-b-4 border-red-700 flex items-center justify-center"
             >
-               {loading ? <Loader2 size={20} className="animate-spin" /> : 'YA, HAPUS'}
+               {loading ? <Loader2 size={20} className="animate-spin" /> : t('delete.yes')}
             </button>
          </div>
       </ClayCard>

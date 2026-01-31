@@ -6,12 +6,9 @@ import { usePathname } from 'next/navigation';
 import { BarChart3, Receipt, Package, Settings, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { clsx } from 'clsx';
 import { motion, AnimatePresence } from 'framer-motion';
+import { usePreferences } from '@/context/PreferencesContext';
 
-const MENU_ITEMS = [
-  { name: 'Report', icon: BarChart3, path: '/report' },
-  { name: 'Input', icon: Receipt, path: '/input' },
-  { name: 'Product', icon: Package, path: '/product' },
-];
+// MENU_ITEMS moved inside component to access t()
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -22,6 +19,13 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
+  const { t } = usePreferences();
+  const menuItems = [
+    { name: t('sidebar.report'), icon: BarChart3, path: '/report' },
+    { name: t('sidebar.input'), icon: Receipt, path: '/input' },
+    { name: t('sidebar.product'), icon: Package, path: '/product' },
+  ];
 
   // Handle responsive check safely
   useEffect(() => {
@@ -56,7 +60,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 md:hidden"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[90] md:hidden"
           />
         )}
       </AnimatePresence>
@@ -70,7 +74,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         }
         transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         className={clsx(
-          "clay-sidebar fixed left-0 top-0 h-screen text-white p-4 flex flex-col z-50 overflow-hidden shadow-2xl",
+          "clay-sidebar fixed left-0 top-0 h-screen text-white p-4 flex flex-col z-[100] overflow-hidden shadow-2xl",
           // On mobile, if not open, we still relying on animate to hide it, 
           // but accessibility-wise adding visibility utility is good? 
           // Framer motion handles the transform.
@@ -87,7 +91,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         {/* Collapse Toggle Button (Desktop Only) */}
         <button 
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="hidden md:block absolute -right-0 top-10 bg-white/20 hover:bg-white/30 p-1.5 rounded-l-xl backdrop-blur-md transition-all z-50 border-l border-white/30 active:scale-90"
+          className="hidden md:block absolute -right-0 top-10 bg-white/20 hover:bg-white/30 p-1.5 rounded-l-xl backdrop-blur-md transition-all z-[100] border-l border-white/30 active:scale-90"
         >
           {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
         </button>
@@ -104,14 +108,14 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
               className="whitespace-nowrap"
             >
               <h1 className="font-extrabold text-2xl leading-none drop-shadow-sm">BakeTrack</h1>
-              <p className="text-sm text-pink-100 font-medium opacity-90">Bakery Dashboard</p>
+              <p className="text-sm text-pink-100 font-medium opacity-90">{t('dashboard.subtitle')}</p>
             </motion.div>
           )}
         </div>
 
         {/* Navigation Pills */}
         <nav className="flex-1 space-y-5">
-          {MENU_ITEMS.map((item) => {
+          {menuItems.map((item) => {
             const isActive = pathname === item.path;
             const showText = !isCollapsed || isMobile;
 
@@ -129,7 +133,16 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                     "p-2.5 rounded-xl transition-colors flex-shrink-0",
                     isActive ? "bg-pink-400 text-white shadow-inner" : "bg-white/10 text-pink-50"
                   )}>
-                    <item.icon size={22} strokeWidth={2.5} />
+                    {/* @ts-ignore */}
+                    {item.isImage ? (
+                       <div className="w-[22px] h-[22px] flex items-center justify-center bg-pink-100/50 rounded-lg p-0.5">
+                           {/* @ts-ignore */}
+                           <img src={item.icon} className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110" alt={item.name} />
+                       </div>
+                    ) : (
+                       // @ts-ignore
+                       <item.icon size={22} strokeWidth={2.5} />
+                    )}
                   </div>
                   
                   {showText && (
@@ -170,7 +183,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                 )}>
                     <Settings size={22} />
                 </div>
-                {(!isCollapsed || isMobile) && <span className="font-bold text-lg">Settings</span>}
+                {(!isCollapsed || isMobile) && <span className="font-bold text-lg">{t('sidebar.settings')}</span>}
               </div>
           </Link>
         </div>

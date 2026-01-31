@@ -1,33 +1,21 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { submitTransaction, deleteTransaction, Transaction } from '@/services/api';
+import { useMemo } from 'react';
 import { X } from 'lucide-react';
-import { useTable } from '@/hooks/useTable';
 import { useDashboard } from '@/context/DashboardContext';
+import { usePreferences } from '@/context/PreferencesContext';
+import { useTable } from '@/hooks/useTable';
+import { useTransactionHandlers } from '@/hooks/useTransactionHandlers';
 import { SyncButton } from '@/components/ui/SyncButton';
 import { TransactionForm } from '@/components/input/TransactionForm';
 import { TransactionHistoryTable } from '@/components/input/TransactionHistoryTable';
 import { DeleteTransactionModal } from '@/components/input/DeleteTransactionModal';
+import { LanguageCurrencySwitcher } from '@/components/ui/LanguageCurrencySwitcher';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 export default function InputPage() {
   const { data, loading: dataLoading, refreshData } = useDashboard();
-  const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState<{
-    date: string;
-    product: string;
-    qty: number | '';
-    price: number;
-  }>({
-    date: new Date().toISOString().split('T')[0],
-    product: '',
-    qty: '',
-    price: 0
-  });
-
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [msgToDelete, setMsgToDelete] = useState<Transaction | null>(null);
+  const { t } = usePreferences();
 
   // Get products from global state
   const productOptions = useMemo(() => {
@@ -40,6 +28,24 @@ export default function InputPage() {
     }));
   }, [data]);
 
+  // Transaction CRUD handlers
+  const {
+    loading,
+    formData,
+    setFormData,
+    editingId,
+    isDeleteModalOpen,
+    setIsDeleteModalOpen,
+    transactionToDelete,
+    resetForm,
+    handleSubmit,
+    handleEdit,
+    confirmDelete,
+    handleDelete,
+    handleProductChange,
+    total
+  } = useTransactionHandlers({ refreshData });
+
   // Table Logic
   const { 
     data: tableData,
@@ -49,112 +55,19 @@ export default function InputPage() {
     setSearchQuery,
     sortConfig,
     handleSort,
-    goToPage
+    goToPage,
+    itemsPerPage, 
+    setItemsPerPage,
+    totalItems
   } = useTable({
     data: data?.transactions || [],
-    itemsPerPage: 20, 
+    itemsPerPage: 5, 
     initialSort: { key: 'date', direction: 'desc' },
     filterFn: (item, query) => item.product.toLowerCase().includes(query.toLowerCase())
   });
 
-  const handleProductChange = (productValue: string) => {
-    const selected = productOptions.find(p => p.value === productValue);
-    setFormData(prev => ({
-      ...prev,
-      product: productValue,
-      price: selected ? Number(selected.price) : prev.price
-    }));
-  };
-
-  const total = (formData.qty === '' ? 0 : formData.qty) * formData.price;
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.product) return;
-    
-    setLoading(true);
-    
-    // Default to 1 if empty
-    const finalQty = formData.qty === '' ? 1 : formData.qty;
-    const finalTotal = finalQty * formData.price;
-    
-    const transactionData: Transaction = {
-      ...formData, 
-      qty: finalQty,
-      total: finalTotal,
-      id: editingId || undefined // Send ID if editing
-    };
-
-    const success = await submitTransaction(transactionData, !!editingId);
-    
-    if (success) {
-      await refreshData();
-      resetForm();
-    } else {
-      alert('Gagal menyimpan ke Google Sheets. Silakan coba lagi.');
-    }
-    setLoading(false);
-  };
-
-  const resetForm = () => {
-    setFormData({
-      date: new Date().toISOString().split('T')[0],
-      product: '',
-      qty: '',
-      price: 0
-    });
-    setEditingId(null);
-  };
-
-  const handleEdit = (t: Transaction) => {
-    let dateStr = '';
-    try {
-        const d = new Date(t.date);
-        dateStr = d.toISOString().split('T')[0];
-    } catch (e) {
-        dateStr = ''; 
-    }
-
-    const productName = t.product.trim();
-
-    setFormData({
-      date: dateStr,
-      product: productName, 
-      qty: t.qty,
-      price: t.price
-    });
-    setEditingId(t.id || null);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const confirmDelete = (t: Transaction) => {
-    setMsgToDelete(t);
-    setIsDeleteModalOpen(true);
-  };
-
-  const handleDelete = async () => {
-    if (!msgToDelete?.id) return;
-    setLoading(true);
-    const success = await deleteTransaction(msgToDelete.id);
-    if (success) {
-      await refreshData();
-      setIsDeleteModalOpen(false);
-      setMsgToDelete(null);
-    } else {
-      alert('Gagal menghapus transaksi.');
-    }
-    setLoading(false);
-  };
-
   if (dataLoading && !data) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center space-y-4">
-          <div className="w-16 h-16 border-4 border-pink-200 border-t-pink-500 rounded-full animate-spin mx-auto"></div>
-          <p className="text-bakery-muted font-black uppercase tracking-widest text-sm">Loading Data...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner message={t('common.loading')} />;
   }
 
   return (
@@ -162,21 +75,22 @@ export default function InputPage() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row items-center gap-8 px-4">
         <div className="w-24 h-24 bg-white rounded-[32px] flex items-center justify-center text-4xl shadow-clay-floating border-4 border-white transform hover:rotate-6 transition-transform">
-          ✏️
+          <img src="/icons/input-penjualan.png" alt="Input" className="w-12 h-12 object-contain" />
         </div>
         <div className="text-center md:text-left flex-1">
-          <h1 className="text-4xl font-black text-bakery-text tracking-tighter leading-none mb-3">Input Penjualan</h1>
+          <h1 className="text-4xl font-black text-bakery-text tracking-tighter leading-none mb-3">{t('input.title')}</h1>
           <p className="text-bakery-muted font-extrabold text-lg opacity-80 uppercase tracking-widest">
-            {editingId ? 'Mode Edit Transaksi' : 'Catat Transaksi Baru'}
+            {editingId ? t('input.mode_edit') : t('input.mode_new')}
           </p>
         </div>
         
         <div className="flex items-center gap-4">
            {editingId && (
             <button onClick={resetForm} className="flex items-center gap-2 bg-red-100 text-red-500 px-4 py-2 rounded-xl font-bold hover:bg-red-200 transition-colors h-12">
-                <X size={18} /> Batal
+                <X size={18} /> {t('common.cancel')}
             </button>
            )}
+           <LanguageCurrencySwitcher />
            <SyncButton variant="compact" />
         </div>
       </div>
@@ -189,7 +103,7 @@ export default function InputPage() {
         editingId={editingId}
         resetForm={resetForm}
         productOptions={productOptions}
-        handleProductChange={handleProductChange}
+        handleProductChange={(val) => handleProductChange(val, productOptions)}
         total={total}
       />
 
@@ -205,6 +119,9 @@ export default function InputPage() {
         currentPage={currentPage}
         totalPages={totalPages}
         goToPage={goToPage}
+        itemsPerPage={itemsPerPage}
+        setItemsPerPage={setItemsPerPage}
+        totalItems={totalItems}
       />
 
       <DeleteTransactionModal 
@@ -212,7 +129,7 @@ export default function InputPage() {
         onClose={() => setIsDeleteModalOpen(false)}
         onConfirm={handleDelete}
         loading={loading}
-        transaction={msgToDelete}
+        transaction={transactionToDelete}
       />
     </div>
   );
