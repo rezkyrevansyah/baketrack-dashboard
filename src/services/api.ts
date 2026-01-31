@@ -43,7 +43,13 @@ const PROXY_URL = '/api/proxy';
  */
 export async function fetchFullData(): Promise<FullDashboardData | null> {
   try {
-    const res = await fetch(`${PROXY_URL}?url=${encodeURIComponent(`${GOOGLE_SCRIPT_URL}?action=getData`)}`);
+    const res = await fetch(`${PROXY_URL}?url=${encodeURIComponent(`${GOOGLE_SCRIPT_URL}?action=getData`)}`, {
+      cache: 'no-store',
+      headers: {
+        'Pragma': 'no-cache',
+        'Cache-Control': 'no-cache'
+      }
+    });
     if (!res.ok) throw new Error('Failed to fetch data');
     const rawData = await res.json();
     

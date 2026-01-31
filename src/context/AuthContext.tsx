@@ -64,7 +64,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const foundUser = profilesToCheck.find(p => {
           const emailMatch = (p.email || '').toLowerCase() === inputEmail.toLowerCase() || inputEmail.toLowerCase() === 'admin';
           // Direct string comparison for password as requested
-          const passMatch = (p.password || '') === inputPass; 
+          // Ensure both are strings to handle numeric passwords from spreadsheet
+          const passMatch = String(p.password || '') === String(inputPass); 
           return emailMatch && passMatch;
       });
       
