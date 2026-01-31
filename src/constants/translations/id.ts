@@ -118,10 +118,30 @@ export const translationsID: Record<string, string> = {
   'sidebar.settings': 'Pengaturan',
   'settings.rate_settings': 'Kurs Dollar',
   'settings.rate_description': 'Atur nilai tukar untuk konversi USD.',
+  'sidebar.logout': 'Keluar',
   // Delete Transaction Modal
   'delete.transaction_title': 'Hapus Transaksi?',
   'delete.transaction_confirm': 'Yakin hapus transaksi',
   'delete.transaction_value': 'senilai',
   'delete.yes': 'YA, HAPUS',
   'delete.no': 'BATAL',
+  // Login Page
+  'login.welcome': 'Selamat Datang Kembali!',
+  'login.subtitle': 'Masuk untuk mengelola BakeTrack',
+  'login.email_placeholder': 'Email atau Username',
+  'login.password_placeholder': 'Password',
+  'login.btn_login': 'Masuk',
+  'login.btn_loading': 'Memproses...',
+  'login.error_auth': 'Email atau password salah. Silakan coba lagi.',
+  'login.error_network': 'Terjadi kesalahan. Cek koneksi internet Anda.',
+  'login.forgot_pass': 'Lupa password? Hubungi Administrator Spreadsheet.',
+  // Loading States
+  'product.loading': 'Memuat Produk...',
+  'settings.loading': 'Memuat Pengaturan...',
+  // Error Alerts
+  'product.error_save': 'Gagal menyimpan produk ke Google Sheets.',
+  'product.error_delete': 'Gagal menghapus produk.',
+  'settings.error_update': 'Gagal memperbarui profil di Google Sheets.',
+  // Button Labels
+  'report.input_sales': 'INPUT PENJUALAN',
 };

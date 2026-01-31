@@ -1,41 +1,63 @@
 'use client';
 
-import { Sidebar } from "@/components/layout/Sidebar";
-import { DashboardProvider } from "@/context/DashboardContext";
-import { PreferencesProvider } from "@/context/PreferencesContext";
-import { useState } from "react";
-import { Menu } from "lucide-react";
+import { useAuth, AuthProvider } from '@/context/AuthContext';
+import { usePathname, useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { Sidebar } from './Sidebar';
 
-export default function ClientLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+function ClientLayoutContent({ children }: { children: React.ReactNode }) {
+  const { isLoggedIn, loading } = useAuth();
+  const router = useRouter();
+  const pathname = usePathname();
+  const [isReady, setIsReady] = useState(false);
 
+  useEffect(() => {
+    if (!loading) {
+      if (!isLoggedIn && pathname !== '/login') {
+        router.push('/login');
+      } else if (isLoggedIn && pathname === '/login') {
+        router.push('/');
+      } else {
+        setIsReady(true);
+      }
+    }
+  }, [isLoggedIn, loading, pathname, router]);
+
+  if (loading || !isReady) {
+    return (
+      <div className="min-h-screen bg-[#FFF0F5] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-pink-500"></div>
+      </div>
+    );
+  }
+
+  // If on login page, render children (LoginPage) without Sidebar
+  if (pathname === '/login') {
+      return <>{children}</>;
+  }
+
+  // Otherwise render with Sidebar (Dashboard Layout)
   return (
-    <PreferencesProvider>
-      <DashboardProvider>
-        {/* Mobile Header Trigger */}
-        <div className="md:hidden fixed top-0 left-0 right-0 z-30 bg-[#F5E6EE]/80 backdrop-blur-md p-4 flex items-center gap-4 border-b border-white/20 shadow-sm h-16">
-          <button 
-            onClick={() => setMobileMenuOpen(true)}
-            className="p-2 bg-white rounded-xl shadow-sm text-pink-500 hover:bg-pink-50 transition-colors"
-          >
-            <Menu size={24} />
-          </button>
-          <h1 className="font-extrabold text-xl text-pink-600">BakeTrack</h1>
-        </div>
-
-        <Sidebar isOpen={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
-
-        {/* Main Content Area */}
-        <main className="flex-1 p-4 md:p-8 h-screen overflow-y-auto w-full relative pt-20 md:pt-0">
-          <div className="max-w-7xl mx-auto">
+    <div className="flex w-full min-h-screen">
+        <Sidebar />
+        <main className="flex-1 p-4 md:p-8 ml-0 md:ml-0 transition-all duration-300">
             {children}
-          </div>
         </main>
-      </DashboardProvider>
-    </PreferencesProvider>
+    </div>
   );
+}
+
+import { usePreferences, PreferencesProvider } from '@/context/PreferencesContext';
+import { DashboardProvider } from '@/context/DashboardContext';
+
+export default function ClientLayout({ children }: { children: React.ReactNode }) {
+    return (
+        <AuthProvider>
+            <PreferencesProvider>
+                <DashboardProvider>
+                    <ClientLayoutContent>{children}</ClientLayoutContent>
+                </DashboardProvider>
+            </PreferencesProvider>
+        </AuthProvider>
+    );
 }

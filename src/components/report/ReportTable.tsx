@@ -130,7 +130,7 @@ export function ReportTable({
                               <div className="flex flex-col items-center justify-center opacity-40">
                                  <ShoppingBag size={48} className="mb-4" />
                                  <p className="font-bold text-bakery-text">
-                                    {searchQuery ? t('common.error') : 'Belum ada data'}
+                                    {searchQuery ? t('common.not_found') : t('common.no_data')}
                                  </p>
                               </div>
                            </td>

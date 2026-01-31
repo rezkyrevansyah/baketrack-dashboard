@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { submitTransaction, deleteTransaction, Transaction } from '@/services/api';
+import { useAuth } from '@/context/AuthContext';
 
 interface FormData {
   date: string;
@@ -13,6 +14,7 @@ interface UseTransactionHandlersProps {
 }
 
 export function useTransactionHandlers({ refreshData }: UseTransactionHandlersProps) {
+  const { user } = useAuth(); // Get current logged-in user
   const [loading, setLoading] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -48,7 +50,8 @@ export function useTransactionHandlers({ refreshData }: UseTransactionHandlersPr
       ...formData, 
       qty: finalQty,
       total: finalTotal,
-      id: editingId || undefined
+      id: editingId || undefined,
+      addedBy: user?.name || user?.email || 'Unknown' // Attach User Audit Trail
     };
 
     const success = await submitTransaction(transactionData, !!editingId);

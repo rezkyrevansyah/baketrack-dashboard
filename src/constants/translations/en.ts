@@ -118,10 +118,30 @@ export const translationsEN: Record<string, string> = {
   'settings.modal_title': 'Edit Profile',
   'settings.rate_settings': 'Exchange Rate',
   'settings.rate_description': 'Set the exchange rate for USD conversion.',
+  'sidebar.logout': 'Logout',
   // Delete Transaction Modal
   'delete.transaction_title': 'Delete Transaction?',
   'delete.transaction_confirm': 'Are you sure you want to delete',
   'delete.transaction_value': 'worth',
   'delete.yes': 'YES, DELETE',
   'delete.no': 'CANCEL',
+  // Login Page
+  'login.welcome': 'Welcome Back!',
+  'login.subtitle': 'Sign in to manage BakeTrack',
+  'login.email_placeholder': 'Email or Username',
+  'login.password_placeholder': 'Password',
+  'login.btn_login': 'Login',
+  'login.btn_loading': 'Processing...',
+  'login.error_auth': 'Invalid email or password. Please try again.',
+  'login.error_network': 'An error occurred. Check your internet connection.',
+  'login.forgot_pass': 'Forgot password? Contact Spreadsheet Administrator.',
+  // Loading States
+  'product.loading': 'Loading Products...',
+  'settings.loading': 'Loading Settings...',
+  // Error Alerts
+  'product.error_save': 'Failed to save product to Google Sheets.',
+  'product.error_delete': 'Failed to delete product.',
+  'settings.error_update': 'Failed to update profile in Google Sheets.',
+  // Button Labels
+  'report.input_sales': 'INPUT SALES',
 };

@@ -3,10 +3,11 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { BarChart3, Receipt, Package, Settings, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { BarChart3, Receipt, Package, Settings, ChevronLeft, ChevronRight, X, LogOut } from 'lucide-react';
 import { clsx } from 'clsx';
 import { motion, AnimatePresence } from 'framer-motion';
 import { usePreferences } from '@/context/PreferencesContext';
+import { useAuth } from '@/context/AuthContext';
 
 // MENU_ITEMS moved inside component to access t()
 
@@ -21,6 +22,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const [isMobile, setIsMobile] = useState(false);
 
   const { t } = usePreferences();
+  const { logout } = useAuth();
   const menuItems = [
     { name: t('sidebar.report'), icon: BarChart3, path: '/report' },
     { name: t('sidebar.input'), icon: Receipt, path: '/input' },
@@ -133,16 +135,7 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                     "p-2.5 rounded-xl transition-colors flex-shrink-0",
                     isActive ? "bg-pink-400 text-white shadow-inner" : "bg-white/10 text-pink-50"
                   )}>
-                    {/* @ts-ignore */}
-                    {item.isImage ? (
-                       <div className="w-[22px] h-[22px] flex items-center justify-center bg-pink-100/50 rounded-lg p-0.5">
-                           {/* @ts-ignore */}
-                           <img src={item.icon} className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-110" alt={item.name} />
-                       </div>
-                    ) : (
-                       // @ts-ignore
-                       <item.icon size={22} strokeWidth={2.5} />
-                    )}
+                    <item.icon size={22} strokeWidth={2.5} />
                   </div>
                   
                   {showText && (
@@ -169,16 +162,17 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           })}
         </nav>
 
-        {/* Bottom Settings Link */}
-        <div className="mt-auto mb-4">
-          <Link href="/settings" onClick={handleLinkClick}>
+        {/* Bottom Actions */}
+        <div className="mt-auto mb-4 space-y-2">
+          {/* Settings */}
+          <Link href="/settings" onClick={handleLinkClick} className="block group">
               <div className={clsx(
-                "clay-nav-item flex items-center gap-4 px-4 py-3", 
+                "clay-nav-item flex items-center gap-4 px-4 py-3 pointer-events-auto", 
                 pathname === '/settings' ? 'active' : '',
                 (!isCollapsed || isMobile) ? "" : "justify-center px-0 mx-2"
               )}>
                 <div className={clsx(
-                    "p-2.5 rounded-xl",
+                    "p-2.5 rounded-xl flex-shrink-0",
                     pathname === '/settings' ? "bg-pink-400 text-white" : "bg-white/10 text-pink-50"
                 )}>
                     <Settings size={22} />
@@ -186,6 +180,27 @@ export function Sidebar({ isOpen = false, onClose }: SidebarProps) {
                 {(!isCollapsed || isMobile) && <span className="font-bold text-lg">{t('sidebar.settings')}</span>}
               </div>
           </Link>
+
+          {/* Logout */}
+          <button 
+            onClick={() => {
+              if (onClose && isMobile) onClose();
+              logout(); // Call actual logout
+            }}
+            className="w-full block group text-left"
+          >
+              <div className={clsx(
+                "clay-nav-item flex items-center gap-4 px-4 py-3 transition-colors hover:bg-red-50/10",
+                (!isCollapsed || isMobile) ? "" : "justify-center px-0 mx-2"
+              )}>
+                <div className={clsx(
+                    "p-2.5 rounded-xl flex-shrink-0 bg-red-100/20 text-red-100 group-hover:bg-red-500 group-hover:text-white transition-colors",
+                )}>
+                    <LogOut size={22} />
+                </div>
+                {(!isCollapsed || isMobile) && <span className="font-bold text-lg text-red-100 group-hover:text-red-200 transition-colors">{t('sidebar.logout')}</span>}
+              </div>
+          </button>
         </div>
       </motion.aside>
     </>

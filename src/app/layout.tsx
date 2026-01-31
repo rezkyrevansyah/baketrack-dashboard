@@ -21,7 +21,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${nunito.variable} font-sans antialiased flex bg-[#F5E6EE] min-h-screen`}>
+      <body className={`${nunito.variable} font-sans antialiased bg-[#F5E6EE] min-h-screen`}>
         <ClientLayout>
           {children}
         </ClientLayout>

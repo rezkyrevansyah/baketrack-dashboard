@@ -9,8 +9,10 @@ export interface Transaction {
   qty: number;
   price: number;
   total: number;
+  addedBy?: string; // New field for Audit Trail
 }
 
+// ... (Product and Profile interfaces remain unchanged)
 export interface Product {
   id: number;
   name: string;
@@ -24,12 +26,14 @@ export interface Profile {
   name: string;
   email: string;
   photourl: string;
+  password?: string;
 }
 
 export interface FullDashboardData {
   transactions: Transaction[];
   products: Product[];
   profile: Profile;
+  profiles?: Profile[]; // New field for multi-user support
 }
 
 const PROXY_URL = '/api/proxy';
@@ -46,18 +50,24 @@ export async function fetchFullData(): Promise<FullDashboardData | null> {
     // Normalize Profile Data
     // GAS might return various casings depending on sheet headers
     const profileRaw = rawData.profile || {};
+    const profilesRaw = rawData.profiles || (rawData.profile ? [rawData.profile] : []); // Handle both V1 and V2 API
     
     // Helper to find case-insensitive key
     const getVal = (obj: any, key: string) => {
+      if (!obj) return undefined;
       const foundKey = Object.keys(obj).find(k => k.toLowerCase() === key.toLowerCase());
       return foundKey ? obj[foundKey] : undefined;
     };
 
-    const profile: Profile = {
-      name: getVal(profileRaw, 'name') || 'Admin Bakery',
-      email: getVal(profileRaw, 'email') || 'admin@baketrack.com',
-      photourl: getVal(profileRaw, 'photourl') || getVal(profileRaw, 'photourl') || getVal(profileRaw, 'photo') || '👩‍🍳'
-    };
+    const mapProfile = (p: any): Profile => ({
+      name: getVal(p, 'name') || 'Admin Bakery',
+      email: getVal(p, 'email') || 'admin@baketrack.com',
+      photourl: getVal(p, 'photourl') || getVal(p, 'photourl') || getVal(p, 'photo') || '👩‍🍳',
+      password: getVal(p, 'password') // Auto-mapped from dynamic sheet data
+    });
+
+    const activeProfile = mapProfile(profileRaw);
+    const allProfiles = profilesRaw.map(mapProfile);
 
     // Normalize Transactions: ensure they have IDs if possible (fallback to timestamp if available, or just index logic in UI)
     // The GAS V2 script returns them.
@@ -71,7 +81,8 @@ export async function fetchFullData(): Promise<FullDashboardData | null> {
     return {
       transactions: transactions,
       products: rawData.products || [],
-      profile
+      profile: activeProfile,
+      profiles: allProfiles
     };
   } catch (error) {
     console.error("API Fetch Error:", error);
@@ -97,6 +108,7 @@ export async function submitTransaction(data: Transaction, isUpdate = false): Pr
     formData.append('qty', data.qty.toString());
     formData.append('price', data.price.toString());
     formData.append('total', data.total.toString());
+    formData.append('addedBy', data.addedBy || ''); // Send addedBy field
 
     const res = await fetch(`${PROXY_URL}?url=${encodeURIComponent(GOOGLE_SCRIPT_URL)}`, {
       method: 'POST',

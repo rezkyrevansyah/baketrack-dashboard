@@ -160,7 +160,7 @@ export default function ReportPage() {
            <Link href="/input">
               <ClayButton className="h-12 px-6 flex items-center gap-2.5 text-sm font-black !rounded-2xl bg-gradient-to-r from-pink-400 to-pink-500 text-white shadow-lg hover:shadow-pink-200 hover:-translate-y-0.5 transition-all">
                 <Plus size={20} strokeWidth={3} />
-                INPUT PENJUALAN
+                {t('report.input_sales')}
               </ClayButton>
            </Link>
         </div>

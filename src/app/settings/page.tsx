@@ -1,11 +1,11 @@
-'use client';
-
+'use client'; 
 import { useState, useEffect } from 'react';
-import { LanguageCurrencySwitcher } from '@/components/ui/LanguageCurrencySwitcher';
-import { usePreferences } from '@/context/PreferencesContext';
-import { Loader2, Settings } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 import { useDashboard } from '@/context/DashboardContext';
+import { usePreferences } from '@/context/PreferencesContext';
 import { updateProfile } from '@/services/api';
+import { Loader2, Settings } from 'lucide-react';
+import { LanguageCurrencySwitcher } from '@/components/ui/LanguageCurrencySwitcher';
 import { SyncButton } from '@/components/ui/SyncButton';
 import { ProfileCard } from '@/components/settings/ProfileCard';
 import { SecurityCard } from '@/components/settings/SecurityCard';
@@ -15,6 +15,7 @@ import { EditProfileModal } from '@/components/settings/EditProfileModal';
 
 export default function SettingsPage() {
   const { data, loading: dataLoading, refreshData } = useDashboard();
+  const { user } = useAuth(); // Import useAuth
   const { t } = usePreferences();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -45,7 +46,7 @@ export default function SettingsPage() {
       await refreshData();
       setIsModalOpen(false);
     } else {
-      alert('Gagal memperbarui profil di Google Sheets.');
+      alert(t('settings.error_update'));
     }
     setIsSubmitting(false);
   };
@@ -55,13 +56,13 @@ export default function SettingsPage() {
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center space-y-4">
           <Loader2 className="w-16 h-16 text-pink-500 animate-spin mx-auto" />
-          <p className="text-bakery-muted font-bold tracking-widest text-sm uppercase">Loading Settings...</p>
+          <p className="text-bakery-muted font-bold tracking-widest text-sm uppercase">{t('settings.loading')}</p>
         </div>
       </div>
     );
   }
 
-  const profile = data?.profile || { name: 'Admin Bakery', email: 'admin@baketrack.com', photourl: '👩‍🍳' };
+  const profile = user || { name: 'Guest', email: 'guest@bakery.com', photourl: '🧁' };
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-700 pb-24">

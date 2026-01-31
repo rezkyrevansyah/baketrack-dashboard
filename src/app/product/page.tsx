@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useDashboard } from '@/context/DashboardContext';
+import { usePreferences } from '@/context/PreferencesContext';
 import { manageProduct, Product } from '@/services/api';
 import { ProductHeader } from '@/components/product/ProductHeader';
 import { ProductGrid } from '@/components/product/ProductGrid';
@@ -11,6 +12,7 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 
 export default function ProductPage() {
   const { data, loading: dataLoading, refreshData } = useDashboard();
+  const { t } = usePreferences();
   const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -72,7 +74,7 @@ export default function ProductPage() {
       await refreshData();
       setIsModalOpen(false);
     } else {
-      alert('Gagal menyimpan produk ke Google Sheets.');
+      alert(t('product.error_save'));
     }
     setIsSubmitting(false);
   };
@@ -93,14 +95,14 @@ export default function ProductPage() {
         setIsDeleteModalOpen(false);
         setProductToDelete(null);
       } else {
-        alert('Gagal menghapus produk.');
+        alert(t('product.error_delete'));
       }
       setIsSubmitting(false);
     }
   };
 
   if (dataLoading && !data) {
-    return <LoadingSpinner message="Loading Products..." />;
+    return <LoadingSpinner message={t('product.loading')} />;
   }
 
   return (
