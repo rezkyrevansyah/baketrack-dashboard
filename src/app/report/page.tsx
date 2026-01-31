@@ -1,101 +1,34 @@
 'use client';
 
-import { useMemo } from 'react';
 import { ClayButton } from '@/components/ui/ClayButton';
 import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { useDashboard } from '@/context/DashboardContext';
-import { SyncButton } from '@/components/ui/SyncButton';
 import { useTable } from '@/hooks/useTable';
 import { SummaryCards } from '@/components/report/SummaryCards';
 import { TopProductsCard } from '@/components/report/TopProductsCard';
 import { WeeklyChart } from '@/components/report/WeeklyChart';
 import { ReportTable } from '@/components/report/ReportTable';
 import { usePreferences } from '@/context/PreferencesContext';
-import { LanguageCurrencySwitcher } from '@/components/ui/LanguageCurrencySwitcher';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { GlobalToolbar } from '@/components/ui/GlobalToolbar';
+import { useReportStats, useTopProducts, useWeeklyData } from '@/hooks/useReportData';
+import { exportTransactionsToCSV } from '@/utils/export';
 
 export default function ReportPage() {
   const { data, loading } = useDashboard();
-  const { t, formatPrice, exchangeRate } = usePreferences();
+  const { t, formatPrice } = usePreferences();
   const transactions = data?.transactions || [];
+  const products = data?.products || [];
 
   // 1. Calculate Summary Stats
-  const stats = useMemo(() => {
-    const totalOmzet = transactions.reduce((sum, t) => sum + Number(t.total), 0);
-    
-    // Calculate profit based on: (Sales Price - Cost Price) * Qty
-    const totalLaba = transactions.reduce((sum, t) => {
-      const product = data?.products.find(p => p.name === t.product);
-      const costPrice = product?.costPrice || 0;
-      const profitPerItem = t.price - costPrice; // Sales Price - Cost Price
-      return sum + (profitPerItem * Number(t.qty));
-    }, 0);
-
-    const totalTx = transactions.length;
-    const aov = totalTx > 0 ? totalOmzet / totalTx : 0;
-
-    const marginPercentage = totalOmzet > 0 ? (totalLaba / totalOmzet) * 100 : 0;
-
-    return {
-      omzet: formatPrice(totalOmzet),
-      laba: formatPrice(totalLaba),
-      aov: formatPrice(aov),
-      margin: `${marginPercentage.toFixed(1)}%`,
-      totalTx,
-      rawOmzet: totalOmzet
-    };
-  }, [transactions, formatPrice, exchangeRate, data]);
+  const stats = useReportStats(transactions, products, formatPrice);
 
   // 2. Calculate Top Products
-  const topProducts = useMemo(() => {
-    const counts: Record<string, { name: string, sold: number, icon: string }> = {};
-    const defaultIcons: Record<string, string> = { 'Cupcake': '🧁', 'Donat': '🍩', 'Croissant': '🥐', 'Roti': '🍞', 'Cake': '🍰' };
-
-    transactions.forEach(t => {
-      const pName = t.product.trim();
-      if (!counts[pName]) {
-        const productInfo = data?.products.find(p => p.name === pName);
-        counts[pName] = { 
-          name: pName, 
-          sold: 0, 
-          icon: productInfo?.image || Object.entries(defaultIcons).find(([k]) => pName.includes(k))?.[1] || '🥯'
-        };
-      }
-      counts[pName].sold += Number(t.qty);
-    });
-
-    return Object.values(counts)
-      .sort((a, b) => b.sold - a.sold)
-      .slice(0, 3);
-  }, [transactions, data, exchangeRate]);
+  const topProducts = useTopProducts(transactions, products);
 
   // 3. Weekly Data Aggregation
-  const weeklyData = useMemo(() => {
-    const days = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-    const result = days.map(day => ({ day, omzet: 0, laba: 0 }));
-
-    transactions.forEach(t => {
-      try {
-        const date = new Date(t.date);
-        if (!isNaN(date.getTime())) {
-             const dayIdx = date.getDay();
-             const omzet = Number(t.total);
-             
-             // Calculate profit per transaction
-             const product = data?.products.find(p => p.name === t.product);
-             const costPrice = product?.costPrice || 0;
-             const profit = (t.price - costPrice) * Number(t.qty);
-
-             result[dayIdx].omzet += omzet;
-             result[dayIdx].laba += profit;
-        }
-      } catch (e) {}
-    });
-
-    return [...result.slice(1), result[0]];
-  }, [transactions, exchangeRate, data]);
+  const weeklyData = useWeeklyData(transactions, products);
 
   // 4. Data Table Logic
   const { 
@@ -119,24 +52,7 @@ export default function ReportPage() {
 
   // 5. CSV Export Logic
   const handleExportCSV = () => {
-    const headers = ['Tanggal', 'Produk', 'Qty', 'Harga', 'Total'];
-    const rows = transactions.map(t => [
-      t.date,
-      `"${t.product}"`, // Escape quotes
-      t.qty,
-      t.price,
-      t.total
-    ]);
-
-    const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.setAttribute('download', `Laporan_Penjualan_${new Date().toISOString().split('T')[0]}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    exportTransactionsToCSV(transactions);
   };
 
   if (loading && !data) {
