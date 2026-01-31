@@ -23,18 +23,29 @@ export default function ReportPage() {
   // 1. Calculate Summary Stats
   const stats = useMemo(() => {
     const totalOmzet = transactions.reduce((sum, t) => sum + Number(t.total), 0);
-    const totalLaba = totalOmzet * 0.45; // Assuming 45% margin
+    
+    // Calculate profit based on: (Sales Price - Cost Price) * Qty
+    const totalLaba = transactions.reduce((sum, t) => {
+      const product = data?.products.find(p => p.name === t.product);
+      const costPrice = product?.costPrice || 0;
+      const profitPerItem = t.price - costPrice; // Sales Price - Cost Price
+      return sum + (profitPerItem * Number(t.qty));
+    }, 0);
+
     const totalTx = transactions.length;
     const aov = totalTx > 0 ? totalOmzet / totalTx : 0;
+
+    const marginPercentage = totalOmzet > 0 ? (totalLaba / totalOmzet) * 100 : 0;
 
     return {
       omzet: formatPrice(totalOmzet),
       laba: formatPrice(totalLaba),
       aov: formatPrice(aov),
+      margin: `${marginPercentage.toFixed(1)}%`,
       totalTx,
       rawOmzet: totalOmzet
     };
-  }, [transactions, formatPrice, exchangeRate]);
+  }, [transactions, formatPrice, exchangeRate, data]);
 
   // 2. Calculate Top Products
   const topProducts = useMemo(() => {
@@ -70,14 +81,20 @@ export default function ReportPage() {
         if (!isNaN(date.getTime())) {
              const dayIdx = date.getDay();
              const omzet = Number(t.total);
+             
+             // Calculate profit per transaction
+             const product = data?.products.find(p => p.name === t.product);
+             const costPrice = product?.costPrice || 0;
+             const profit = (t.price - costPrice) * Number(t.qty);
+
              result[dayIdx].omzet += omzet;
-             result[dayIdx].laba += omzet * 0.45;
+             result[dayIdx].laba += profit;
         }
       } catch (e) {}
     });
 
     return [...result.slice(1), result[0]];
-  }, [transactions, exchangeRate]);
+  }, [transactions, exchangeRate, data]);
 
   // 4. Data Table Logic
   const { 

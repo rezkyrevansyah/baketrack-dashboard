@@ -6,6 +6,7 @@ type SummaryStats = {
   omzet: string;
   laba: string;
   aov: string;
+  margin?: string;
 };
 
 export function SummaryCards({ stats }: { stats: SummaryStats }) {
@@ -49,7 +50,7 @@ export function SummaryCards({ stats }: { stats: SummaryStats }) {
                   <Sparkles size={22} className="text-white drop-shadow-sm" strokeWidth={2.5} />
                </div>
                <div className="bg-white/25 px-3 py-1 rounded-full border border-white/40">
-                  <p className="text-white text-[10px] font-black tracking-wider uppercase drop-shadow-sm">~45% {t('cards.margin')}</p>
+                  <p className="text-white text-[10px] font-black tracking-wider uppercase drop-shadow-sm">{stats.margin || '0%'} {t('cards.margin')}</p>
                </div>
             </div>
             

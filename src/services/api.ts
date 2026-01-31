@@ -12,11 +12,11 @@ export interface Transaction {
   addedBy?: string; // New field for Audit Trail
 }
 
-// ... (Product and Profile interfaces remain unchanged)
 export interface Product {
   id: number;
   name: string;
   price: number;
+  costPrice?: number; // Optional because legacy data might not have it
   stock: number;
   image: string;
   sold: number;
@@ -84,9 +84,19 @@ export async function fetchFullData(): Promise<FullDashboardData | null> {
       id: t.timestamp ? t.timestamp.toString() : t.id?.toString()
     }));
 
+    const products = (rawData.products || []).map((p: any) => ({
+      ...p,
+      // Map GAS lowercase 'costprice' to frontend 'costPrice'
+      costPrice: p.costprice !== undefined ? Number(p.costprice) : (p.costPrice !== undefined ? Number(p.costPrice) : undefined),
+      // Ensure numeric types
+      price: Number(p.price),
+      stock: Number(p.stock),
+      sold: Number(p.sold)
+    }));
+
     return {
       transactions: transactions,
-      products: rawData.products || [],
+      products: products,
       profile: activeProfile,
       profiles: allProfiles
     };
@@ -161,6 +171,7 @@ export async function manageProduct(action: 'create' | 'update' | 'delete', prod
     formData.append('id', product.id?.toString() || '');
     formData.append('name', product.name || '');
     formData.append('price', product.price?.toString() || '');
+    formData.append('costPrice', product.costPrice?.toString() || '');
     formData.append('stock', product.stock?.toString() || '');
     formData.append('image', product.image || '');
 

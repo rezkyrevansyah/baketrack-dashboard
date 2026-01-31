@@ -24,6 +24,7 @@ export default function ProductPage() {
   const [formData, setFormData] = useState({
     name: '',
     price: '',
+    costPrice: '',
     stock: '',
     image: '🧁'
   });
@@ -44,12 +45,13 @@ export default function ProductPage() {
       setFormData({
         name: product.name,
         price: product.price.toString(),
+        costPrice: product.costPrice?.toString() || '',
         stock: product.stock.toString(),
         image: product.image
       });
     } else {
       setEditingProduct(null);
-      setFormData({ name: '', price: '', stock: '', image: '🧁' });
+      setFormData({ name: '', price: '', costPrice: '', stock: '', image: '🧁' });
     }
     setIsModalOpen(true);
   };
@@ -66,6 +68,7 @@ export default function ProductPage() {
       id: Number(id),
       name: formData.name,
       price: Number(formData.price),
+      costPrice: Number(formData.costPrice),
       stock: Number(formData.stock),
       image: formData.image
     });

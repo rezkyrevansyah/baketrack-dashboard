@@ -9,6 +9,7 @@ import { Product } from '@/services/api';
 interface ProductFormData {
   name: string;
   price: string;
+  costPrice: string;
   stock: string;
   image: string;
 }
@@ -73,6 +74,18 @@ export function ProductFormModal({
                   value={formData.price}
                   onValueChange={(val) => setFormData({...formData, price: val.toString()})}
                   placeholder="8000"
+                  className="clay-input w-full !bg-gray-50/50 !shadow-inner focus:!bg-white"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="clay-label !mb-0 text-xs font-black opacity-50 uppercase tracking-widest flex items-center gap-2">
+                  <Hash size={14} className="text-emerald-400" /> {t('product.cost_price')}
+                </label>
+                <NumericInput 
+                  required
+                  value={formData.costPrice}
+                  onValueChange={(val) => setFormData({...formData, costPrice: val.toString()})}
+                  placeholder="5000"
                   className="clay-input w-full !bg-gray-50/50 !shadow-inner focus:!bg-white"
                 />
               </div>
