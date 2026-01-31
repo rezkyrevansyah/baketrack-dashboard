@@ -63,13 +63,13 @@ export function TransactionHistoryTable({
         </div>
         
         <div className="clay-card-static !bg-white !rounded-[32px] overflow-hidden shadow-clay-card p-0">
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto w-full max-w-full scrollbar-hide">
             <table className="w-full text-left">
               <thead className="bg-pink-50/50 text-bakery-muted uppercase text-xs font-black tracking-widest">
                 <tr>
-                   <th className="px-6 py-5 w-16 text-center">No</th>
+                   <th className="px-3 md:px-6 py-5 w-12 md:w-16 text-center">No</th>
                    <th 
-                    className="px-6 py-5 cursor-pointer hover:bg-pink-100/50 transition-colors select-none"
+                    className="px-3 md:px-6 py-5 cursor-pointer hover:bg-pink-100/50 transition-colors select-none"
                     onClick={() => handleSort('date')}
                    >
                      <div className="flex items-center gap-2">
@@ -79,10 +79,10 @@ export function TransactionHistoryTable({
                        )}
                      </div>
                    </th>
-                   <th className="px-6 py-5">{t('product')}</th>
-                   <th className="px-6 py-5 text-right">{t('qty')}</th>
+                   <th className="px-3 md:px-6 py-5 min-w-[140px] md:min-w-0">{t('product')}</th>
+                   <th className="px-3 md:px-6 py-5 text-right whitespace-nowrap">{t('qty')}</th>
                    <th 
-                    className="px-6 py-5 text-right cursor-pointer hover:bg-pink-100/50 transition-colors select-none"
+                    className="px-3 md:px-6 py-5 text-right cursor-pointer hover:bg-pink-100/50 transition-colors select-none whitespace-nowrap"
                     onClick={() => handleSort('total')}
                    >
                      <div className="flex items-center justify-end gap-2">
@@ -92,31 +92,31 @@ export function TransactionHistoryTable({
                        )}
                      </div>
                    </th>
-                   <th className="px-6 py-5 text-center">{t('actions')}</th>
+                   <th className="px-3 md:px-6 py-5 text-center whitespace-nowrap">{t('actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 text-sm">
                  {tableData.map((item, idx) => (
                     <tr key={item.id || idx} className="hover:bg-pink-50/10 transition-colors group">
-                       <td className="px-6 py-4 font-bold text-bakery-muted text-center">
+                       <td className="px-3 md:px-6 py-4 font-bold text-bakery-muted text-center">
                           {(currentPage - 1) * itemsPerPage + idx + 1}
                        </td>
-                       <td className="px-6 py-4 font-bold text-bakery-text">
+                       <td className="px-3 md:px-6 py-4 font-bold text-bakery-text whitespace-nowrap">
                          {formatDate(item.date, language)}
                        </td>
-                       <td className="px-6 py-4 font-bold text-bakery-text flex items-center gap-3">
+                       <td className="px-3 md:px-6 py-4 font-bold text-bakery-text flex items-center gap-2 md:gap-3 min-w-[140px] md:min-w-0">
                          <span className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-lg shadow-sm border border-gray-100">
                            {productOptions.find(p => p.value === item.product)?.icon || '📦'}
                          </span>
                          {item.product}
                        </td>
-                       <td className="px-6 py-4 font-bold text-bakery-text text-right">
+                       <td className="px-3 md:px-6 py-4 font-bold text-bakery-text text-right">
                          {item.qty}
                        </td>
-                       <td className="px-6 py-4 font-bold text-bakery-pink text-right">
+                       <td className="px-3 md:px-6 py-4 font-bold text-bakery-pink text-right whitespace-nowrap">
                          {formatPrice(item.total)}
                        </td>
-                       <td className="px-6 py-4">
+                       <td className="px-3 md:px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center justify-center gap-2 transition-opacity">
                              <button 
                                onClick={() => handleEdit(item)} 

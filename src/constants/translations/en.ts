@@ -144,4 +144,7 @@ export const translationsEN: Record<string, string> = {
   'settings.error_update': 'Failed to update profile in Google Sheets.',
   // Button Labels
   'report.input_sales': 'INPUT SALES',
+  'report.weekly_chart': 'Weekly Chart',
+  'report.top_products': 'Top Products',
+  'report.transaction_history': 'Transaction History',
 };

@@ -144,4 +144,7 @@ export const translationsID: Record<string, string> = {
   'settings.error_update': 'Gagal memperbarui profil di Google Sheets.',
   // Button Labels
   'report.input_sales': 'INPUT PENJUALAN',
+  'report.weekly_chart': 'Grafik Mingguan',
+  'report.top_products': 'Produk Terlaris',
+  'report.transaction_history': 'Riwayat Transaksi',
 };

@@ -126,68 +126,92 @@ export default function ReportPage() {
   }
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500 pb-12">
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 px-4 pt-4 md:pt-6">
+    <div className="max-w-6xl mx-auto space-y-10 animate-in fade-in duration-700">
+      
+      {/* --- HEADER (MATCHING INPUT PAGE STRUCTURE) --- */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-4 pt-4 md:pt-6">
         <div>
-          <h1 className="text-3xl sm:text-4xl font-black text-bakery-text tracking-tight mb-1 sm:mb-2">{t('report.title')}</h1>
-          <p className="text-bakery-muted font-bold text-xs sm:text-sm tracking-wide opacity-70 uppercase">
+          <h1 className="text-4xl font-black text-bakery-text tracking-tight mb-2">
+            {t('report.title')}
+          </h1>
+          <p className="text-bakery-muted font-bold text-sm tracking-wide opacity-70 uppercase">
              {t('report.subtitle')}
           </p>
         </div>
 
-        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-4 w-full md:w-auto">
-           {/* Status Bar */}
-           <div className="flex flex-wrap justify-center md:justify-end items-center gap-2 p-2 bg-white/95 rounded-2xl border border-white/50 shadow-sm w-full md:w-auto">
-              <div className="hidden lg:flex flex-col px-3">
-                 <span className="text-[9px] font-black text-bakery-muted uppercase tracking-widest opacity-50">{t('period')}</span>
-                 <span className="text-xs font-black text-bakery-text">
+        <div className="w-full md:w-auto flex flex-col items-center xl:flex-row gap-4">
+           {/* Unified Toolbar Container */}
+           <div className="flex flex-wrap md:flex-nowrap items-center justify-center gap-1 p-1.5 bg-white rounded-3xl border border-pink-100/50 shadow-sm w-full md:w-auto">
+              
+              {/* 1. Period Indicator */}
+              <div className="hidden md:flex flex-col px-4 border-r border-gray-100 items-start">
+                  <span className="text-[10px] font-bold text-bakery-muted/60 uppercase tracking-widest leading-none mb-1">{t('period')}</span>
+                  <span className="text-sm font-black text-bakery-text leading-none whitespace-nowrap">
                     {new Date().toLocaleDateString(t('language') === 'Bahasa' ? 'id-ID' : 'en-US', { month: 'short', year: 'numeric' })}
-                 </span>
+                  </span>
               </div>
-              <div className="h-6 w-px bg-gray-200 hidden lg:block"></div>
-              
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-green-50 border border-green-100 text-green-600">
-                 <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></div>
-                 <span className="text-[10px] font-black uppercase tracking-widest">{t('live')}</span>
+
+              {/* 2. Live Status Badge */}
+              <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 mx-1 rounded-xl bg-emerald-50/50 border border-emerald-100 text-emerald-600">
+                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.6)]"></div>
+                  <span className="text-[10px] font-black uppercase tracking-widest">{t('live')}</span>
               </div>
-              
-              <LanguageCurrencySwitcher />
-              <SyncButton variant="compact" className="!w-9 !h-9 !rounded-lg !border-none !bg-white !shadow-sm text-bakery-text/70 hover:!text-bakery-pink hover:!bg-pink-50" />
+
+              <div className="hidden sm:block h-8 w-px bg-gray-100 mx-1"></div>
+
+              {/* 3. Controls (Language + Sync) */}
+              <div className="flex items-center gap-2 px-1">
+                  <LanguageCurrencySwitcher />
+                  <SyncButton variant="compact" className="!w-10 !h-10 !rounded-xl !border-transparent hover:!bg-pink-50 hover:!text-pink-500 !text-bakery-muted/70" />
+              </div>
            </div>
 
            {/* Primary Action */}
-           <Link href="/input" className="w-full md:w-auto">
-              <ClayButton className="w-full md:w-auto h-12 px-6 flex items-center justify-center gap-2.5 text-sm font-black !rounded-2xl bg-gradient-to-r from-pink-400 to-pink-500 text-white shadow-lg hover:shadow-pink-200 hover:-translate-y-0.5 transition-all">
-                <Plus size={20} strokeWidth={3} />
-                {t('report.input_sales')}
+           <Link href="/input" className="flex-1 md:flex-none w-full md:w-auto">
+              <ClayButton className="w-full md:w-auto h-14 px-8 flex items-center justify-center gap-3 text-sm font-black !rounded-[20px] bg-gradient-to-r from-[#FF9A9E] to-[#FECFEF] text-white shadow-lg hover:shadow-pink-200/50 hover:-translate-y-1 transition-all group">
+                <Plus size={22} strokeWidth={3} className="text-white/90 group-hover:scale-110 transition-transform" />
+                <span className="tracking-wide">INPUT SALES</span>
               </ClayButton>
            </Link>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <SummaryCards stats={stats} />
-          <TopProductsCard products={topProducts} />
+      {/* --- CONTENT GRID --- */}
+      <div className="grid grid-cols-1 gap-8 px-4 pb-12">
+          
+          {/* 1. Top Row: Stats + Top Products (4 cols) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+             <SummaryCards stats={stats} />
+             <TopProductsCard products={topProducts} />
+          </div>
+
+          {/* 2. Middle Row: Charts */}
+          <div className="w-full space-y-2">
+             <div className="flex items-center justify-between px-1">
+               <h3 className="text-lg font-black text-bakery-text/80">{t('report.weekly_chart')}</h3>
+             </div>
+             <WeeklyChart data={weeklyData} />
+          </div>
+
+          {/* 3. Detailed Transaction Table */}
+          <div className="space-y-2">
+             <ReportTable 
+              totalTx={stats.totalTx}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
+              handleExportCSV={handleExportCSV}
+              tableData={tableData}
+              sortConfig={sortConfig}
+              handleSort={handleSort}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              goToPage={goToPage}
+              itemsPerPage={itemsPerPage}
+              setItemsPerPage={setItemsPerPage}
+              totalItems={totalItems}
+            />
+          </div>
       </div>
-
-      <WeeklyChart data={weeklyData} />
-
-      <ReportTable 
-        totalTx={stats.totalTx}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        handleExportCSV={handleExportCSV}
-        tableData={tableData}
-        sortConfig={sortConfig}
-        handleSort={handleSort}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        goToPage={goToPage}
-        itemsPerPage={itemsPerPage}
-        setItemsPerPage={setItemsPerPage}
-        totalItems={totalItems}
-      />
     </div>
   );
 }

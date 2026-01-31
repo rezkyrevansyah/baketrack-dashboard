@@ -136,7 +136,7 @@ export function TransactionForm({
           </div>
 
           <div className="space-y-4">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 bg-gradient-to-br from-white via-pink-50/20 to-pink-50/40 p-8 rounded-[40px] border-4 border-white shadow-inner">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 bg-gradient-to-br from-white via-pink-50/20 to-pink-50/40 p-4 sm:p-8 rounded-[40px] border-4 border-white shadow-inner">
               <div className="flex items-center gap-6 pl-2">
                   <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center text-3xl border-2 border-pink-100/50 shrink-0">
                     <img src="/icons/total-bayar.png" alt="Total" className="w-10 h-10 object-contain" />
