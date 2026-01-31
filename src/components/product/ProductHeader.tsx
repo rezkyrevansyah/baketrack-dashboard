@@ -2,8 +2,7 @@
 
 import { Search, Plus } from 'lucide-react';
 import { ClayButton } from '@/components/ui/ClayButton';
-import { SyncButton } from '@/components/ui/SyncButton';
-import { LanguageCurrencySwitcher } from '@/components/ui/LanguageCurrencySwitcher';
+import { GlobalToolbar } from '@/components/ui/GlobalToolbar';
 import { usePreferences } from '@/context/PreferencesContext';
 
 interface ProductHeaderProps {
@@ -25,12 +24,12 @@ export function ProductHeader({ searchQuery, setSearchQuery, onAddClick }: Produ
       </div>
 
       <div className="w-full md:w-auto flex flex-col md:flex-row items-stretch md:items-center gap-4">
-         {/* Row 1: Language/Currency */}
+         {/* Row 1: Global Toolbar (Period, Lang, Sync) */}
          <div className="flex justify-start md:justify-center">
-            <LanguageCurrencySwitcher />
+            <GlobalToolbar />
          </div>
 
-         {/* Row 2: Search & Sync */}
+         {/* Row 2: Search */}
          <div className="flex items-center gap-3 w-full md:w-auto">
             <div className="relative group flex-1 md:w-auto">
                <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-pink-300 group-focus-within:text-pink-500 transition-colors" size={18} />
@@ -42,7 +41,6 @@ export function ProductHeader({ searchQuery, setSearchQuery, onAddClick }: Produ
                  className="clay-input !pl-12 !py-3 w-full md:w-64 bg-white/60 focus:bg-white !rounded-2xl transition-all shadow-sm"
                />
             </div>
-            <SyncButton variant="compact" />
          </div>
          
          {/* Row 3: Add Button */}

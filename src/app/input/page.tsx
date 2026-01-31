@@ -10,8 +10,8 @@ import { SyncButton } from '@/components/ui/SyncButton';
 import { TransactionForm } from '@/components/input/TransactionForm';
 import { TransactionHistoryTable } from '@/components/input/TransactionHistoryTable';
 import { DeleteTransactionModal } from '@/components/input/DeleteTransactionModal';
-import { LanguageCurrencySwitcher } from '@/components/ui/LanguageCurrencySwitcher';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { GlobalToolbar } from '@/components/ui/GlobalToolbar';
 
 export default function InputPage() {
   const { data, loading: dataLoading, refreshData } = useDashboard();
@@ -87,21 +87,19 @@ export default function InputPage() {
         <div className="w-full md:w-auto flex flex-col md:flex-row items-stretch md:items-center gap-4">
            {/* Mobile: Full width buttons, Desktop: Auto */}
            <div className="flex justify-start md:justify-center">
-              <LanguageCurrencySwitcher />
+              <GlobalToolbar />
            </div>
 
-           <div className="flex items-center gap-3 w-full md:w-auto">
-             <SyncButton />
-             
-             {editingId && (
+           {editingId && (
+            <div className="flex items-center gap-3 w-full md:w-auto">
               <button 
                 onClick={resetForm}
                 className="flex items-center gap-2 bg-red-100 text-red-500 px-4 py-2.5 rounded-2xl font-bold hover:bg-red-200 transition-colors h-12 shadow-sm"
               >
                   <X size={18} /> {t('common.cancel')}
               </button>
-             )}
-           </div>
+            </div>
+           )}
         </div>
       </div>
 
